@@ -21,11 +21,11 @@ export function AuthProvider({ children }) {
   }, []);
 
   const signIn = async (email, password) => {
-    const data = await api.post("/api/auth/login", { email, password });
-    setToken(data.token);
-    setUser(data.user);
-    return data;
-  };
+  const data = await api.post("/api/auth/login", { email, password });
+  setToken(data.token);
+  setUser(data.user);
+  return data.user;
+};
 
   const signOut = () => {
     setToken(null);
