@@ -14,18 +14,24 @@ export default function Login() {
   if (!loading && user) return <Navigate to="/" replace />;
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSubmitting(true);
-    try {
-      await signIn(email, password);
-      navigate("/");
-    } catch (err) {
-      setError(err.message || "البريد الإلكتروني أو كلمة المرور غير صحيحة.");
-    } finally {
-      setSubmitting(false);
+  e.preventDefault();
+  setError("");
+  setSubmitting(true);
+
+  try {
+    const loggedInUser = await signIn(email, password);
+
+    if (loggedInUser.must_change_password) {
+      navigate("/change-password", { replace: true });
+    } else {
+      navigate("/", { replace: true });
     }
-  };
+  } catch (err) {
+    setError(err.message || "البريد الإلكتروني أو كلمة المرور غير صحيحة.");
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   return (
     <div className="admin-login">

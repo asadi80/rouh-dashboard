@@ -13,6 +13,7 @@ import AnnouncementsManage from "./pages/AnnouncementsManage";
 import JobTitlesManage from "./pages/JobTitlesManage";
 import StaffManage from "./pages/StaffManage";
 import SettingsManage from "./pages/SettingsManage";
+import ChangePassword from "./pages/ChangePassword";
 export default function App() {
   return (
     <BrowserRouter>
@@ -35,6 +36,7 @@ export default function App() {
             <Route path="announcements" element={<AnnouncementsManage />} />
             <Route path="job-titles" element={<JobTitlesManage />} />
             <Route path="settings" element={<SettingsManage />} />
+            <Route path="/change-password" element={<ChangePassword />} />
             <Route
               path="staff"
               element={
