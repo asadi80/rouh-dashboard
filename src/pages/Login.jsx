@@ -20,6 +20,8 @@ export default function Login() {
 
   try {
     const loggedInUser = await signIn(email, password);
+    console.log(loggedInUser);
+    
 
     if (loggedInUser.must_change_password) {
       navigate("/change-password", { replace: true });
