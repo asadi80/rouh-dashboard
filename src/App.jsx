@@ -36,7 +36,7 @@ export default function App() {
             <Route path="announcements" element={<AnnouncementsManage />} />
             <Route path="job-titles" element={<JobTitlesManage />} />
             <Route path="settings" element={<SettingsManage />} />
-            <Route path="/change-password" element={<ChangePassword />} />
+            <Route path="change-password" element={<ChangePassword />} />
             <Route
               path="staff"
               element={
