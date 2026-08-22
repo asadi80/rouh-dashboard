@@ -11,29 +11,34 @@ export default function Login() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  if (!loading && user) return <Navigate to="/" replace />;
+  if (!loading && user) {
+    if (user.must_change_password) {
+      return <Navigate to="/change-password" replace />;
+    }
+
+    return <Navigate to="/" replace />;
+  }
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError("");
-  setSubmitting(true);
+    e.preventDefault();
+    setError("");
+    setSubmitting(true);
 
-  try {
-    const loggedInUser = await signIn(email, password);
-    console.log(loggedInUser);
-    
+    try {
+      const loggedInUser = await signIn(email, password);
+      console.log(loggedInUser);
 
-    if (loggedInUser.must_change_password) {
-      navigate("/change-password", { replace: true });
-    } else {
-      navigate("/", { replace: true });
+      if (loggedInUser.must_change_password) {
+        navigate("/change-password", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
+    } catch (err) {
+      setError(err.message || "البريد الإلكتروني أو كلمة المرور غير صحيحة.");
+    } finally {
+      setSubmitting(false);
     }
-  } catch (err) {
-    setError(err.message || "البريد الإلكتروني أو كلمة المرور غير صحيحة.");
-  } finally {
-    setSubmitting(false);
-  }
-};
+  };
 
   return (
     <div className="admin-login">
@@ -65,7 +70,10 @@ export default function Login() {
           />
         </label>
 
-        <button className="btn btn-primary admin-login__submit" disabled={submitting}>
+        <button
+          className="btn btn-primary admin-login__submit"
+          disabled={submitting}
+        >
           {submitting ? "جارٍ الدخول..." : "تسجيل الدخول"}
         </button>
       </form>
