@@ -19,26 +19,44 @@ export default function Login() {
     return <Navigate to="/" replace />;
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSubmitting(true);
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    try {
-      const loggedInUser = await signIn(email, password);
-      console.log(loggedInUser);
+  console.log("LOGIN BUTTON CLICKED");
+  console.log("Email:", email);
 
-      if (loggedInUser.must_change_password) {
-        navigate("/change-password", { replace: true });
-      } else {
-        navigate("/", { replace: true });
-      }
-    } catch (err) {
-      setError(err.message || "البريد الإلكتروني أو كلمة المرور غير صحيحة.");
-    } finally {
-      setSubmitting(false);
+  setError("");
+  setSubmitting(true);
+
+  try {
+    console.log("Calling signIn...");
+
+    const loggedInUser = await signIn(email, password);
+
+    console.log("LOGIN SUCCESS:", loggedInUser);
+    console.log(
+      "must_change_password:",
+      loggedInUser?.must_change_password
+    );
+
+    if (loggedInUser?.must_change_password === true) {
+      console.log("REDIRECTING TO CHANGE PASSWORD");
+      navigate("/change-password", { replace: true });
+    } else {
+      console.log("REDIRECTING TO DASHBOARD");
+      navigate("/", { replace: true });
     }
-  };
+  } catch (err) {
+    console.error("LOGIN ERROR:", err);
+    console.error("LOGIN ERROR MESSAGE:", err?.message);
+
+    setError(
+      err.message || "البريد الإلكتروني أو كلمة المرور غير صحيحة."
+    );
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   return (
     <div className="admin-login">
