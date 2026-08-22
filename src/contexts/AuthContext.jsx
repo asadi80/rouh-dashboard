@@ -20,11 +20,19 @@ export function AuthProvider({ children }) {
       .finally(() => setLoading(false));
   }, []);
 
-  const signIn = async (email, password) => {
+const signIn = async (email, password) => {
   const data = await api.post("/api/auth/login", { email, password });
   setToken(data.token);
-  setUser(data.user);
-  return data.user;
+  
+  // Make sure we capture the user object with all properties including must_change_password
+  const userData = data.user;
+  setUser(userData);
+  
+  // Log to debug
+  console.log("AuthContext signIn - user data:", userData);
+  console.log("AuthContext signIn - must_change_password:", userData?.must_change_password);
+  
+  return userData;
 };
 
   const signOut = () => {
