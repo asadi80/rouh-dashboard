@@ -11,13 +11,13 @@ export default function Login() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  if (!loading && user) {
-    if (user.must_change_password) {
-      return <Navigate to="/change-password" replace />;
-    }
+  // if (!loading && user) {
+  //   if (user.must_change_password) {
+  //     return <Navigate to="/change-password" replace />;
+  //   }
 
-    return <Navigate to="/" replace />;
-  }
+  //   return <Navigate to="/" replace />;
+  // }
 
  const handleSubmit = async (e) => {
   e.preventDefault();
