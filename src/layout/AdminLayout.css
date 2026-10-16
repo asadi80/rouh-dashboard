@@ -330,74 +330,143 @@ border-radius: 10px;
 margin-bottom: 16px;
 }
 
+.admin-topbar,
+.admin-overlay {
+  display: none;
+}
+
 /* ================================
 Tablet: up to 880px
 ================================ */
 
 @media (max-width: 880px) {
-.admin-shell {
-flex-direction: column;
-}
+  .admin-shell {
+    flex-direction: column;
+  }
 
-.admin-sidebar {
-position: relative;
-top: auto;
-width: 100%;
-height: auto;
-padding: 18px;
-overflow: visible;
-}
+  /* Top bar */
+  .admin-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    padding: 10px 16px;
+    background: var(--teal-900);
+    color: var(--white);
+  }
 
-.admin-sidebar__brand {
-border: none;
-padding: 0 0 14px;
-margin: 0 0 14px;
-border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-}
+  .admin-topbar__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 16px;
+  }
 
-.admin-sidebar__nav {
-display: flex;
-flex-direction: row;
-flex-wrap: wrap;
-gap: 6px;
-}
+  /* Burger button */
+  .admin-burger {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 0;
+  }
 
-.admin-sidebar__link {
-padding: 10px 12px;
-font-size: 13px;
-}
+  .admin-burger span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: var(--white);
+    border-radius: 2px;
+    transition: transform 0.25s ease, opacity 0.2s ease;
+  }
 
-.admin-sidebar__user {
-border-top: 1px solid rgba(255, 255, 255, 0.12);
-padding-top: 14px;
-margin-top: 14px;
-flex-direction: row;
-flex-wrap: wrap;
-align-items: center;
-gap: 12px;
-}
+  .admin-burger--open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .admin-burger--open span:nth-child(2) {
+    opacity: 0;
+  }
+  .admin-burger--open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
 
-.admin-sidebar__logout {
-width: auto;
-margin-inline-start: auto;
-}
+  /* Overlay */
+  .admin-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+  }
 
-.admin-main {
-width: 100%;
-padding: 24px 20px;
-}
+  .admin-overlay--visible {
+    opacity: 1;
+    visibility: visible;
+  }
 
-.admin-form {
-grid-template-columns: minmax(0, 1fr);
-}
+  /* Sidebar becomes an off-canvas drawer */
+  .admin-sidebar {
+    position: fixed;
+    top: 0;
+    inset-inline-start: 0;
+    z-index: 60;
+    width: min(290px, 85vw);
+    height: 100vh;
+    height: 100dvh;
+    padding: 24px 18px;
+    overflow-y: auto;
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform 0.28s ease, visibility 0.28s ease;
+    box-shadow: none;
+  }
 
-.admin-form--full {
-grid-column: 1 / -1;
-}
+  /* RTL: drawer slides in from the right */
+  .admin-sidebar:dir(rtl) {
+    transform: translateX(100%);
+  }
 
-.admin-stats {
-grid-template-columns: repeat(2, minmax(0, 1fr));
-}
+  .admin-sidebar--open,
+  .admin-sidebar--open:dir(rtl) {
+    transform: translateX(0);
+    visibility: visible;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .admin-sidebar__brand {
+    padding: 0 10px 20px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .admin-main {
+    width: 100%;
+    padding: 24px 20px;
+  }
+
+  .admin-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-form--full {
+    grid-column: 1 / -1;
+  }
+
+  .admin-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 /* ================================
@@ -519,6 +588,7 @@ padding: 10px 8px;
 font-size: 12px;
 white-space: nowrap;
 }
+
 }
 
 /* ================================
@@ -571,8 +641,11 @@ max-width: 100%;
 }
 
 @media (prefers-reduced-motion: reduce) {
-.admin-sidebar__link,
-.admin-sidebar__logout {
-transition: none;
-}
+  .admin-sidebar__link,
+  .admin-sidebar__logout,
+  .admin-sidebar,
+  .admin-overlay,
+  .admin-burger span {
+    transition: none;
+  }
 }

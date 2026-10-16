@@ -1,4 +1,5 @@
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import "./AdminLayout.css";
 
@@ -17,6 +18,28 @@ const links = [
 export default function AdminLayout() {
   const { user, signOut, isSuperAdmin } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const closeMenu = () => setMenuOpen(false);
+
+  // Close the drawer on route change
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
+  // Escape to close + lock body scroll while open
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e) => e.key === "Escape" && setMenuOpen(false);
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [menuOpen]);
 
   const handleSignOut = () => {
     signOut();
@@ -25,7 +48,33 @@ export default function AdminLayout() {
 
   return (
     <div className="admin-shell">
-      <aside className="admin-sidebar">
+      {/* Mobile top bar (hidden on desktop) */}
+      <header className="admin-topbar">
+        <span className="admin-topbar__title">لوحة تحكم مصحة روح</span>
+        <button
+          type="button"
+          className={"admin-burger" + (menuOpen ? " admin-burger--open" : "")}
+          onClick={() => setMenuOpen((o) => !o)}
+          aria-label={menuOpen ? "إغلاق القائمة" : "فتح القائمة"}
+          aria-expanded={menuOpen}
+          aria-controls="admin-sidebar"
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+      </header>
+
+      <div
+        className={"admin-overlay" + (menuOpen ? " admin-overlay--visible" : "")}
+        onClick={closeMenu}
+        aria-hidden="true"
+      />
+
+      <aside
+        id="admin-sidebar"
+        className={"admin-sidebar" + (menuOpen ? " admin-sidebar--open" : "")}
+      >
         <div className="admin-sidebar__brand">لوحة تحكم مصحة روح</div>
         <nav className="admin-sidebar__nav">
           {links
@@ -35,6 +84,7 @@ export default function AdminLayout() {
                 key={l.to}
                 to={l.to}
                 end={l.end}
+                onClick={closeMenu}
                 className={({ isActive }) =>
                   "admin-sidebar__link" + (isActive ? " admin-sidebar__link--active" : "")
                 }
