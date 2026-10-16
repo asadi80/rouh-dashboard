@@ -2,6 +2,19 @@
 Admin Layout
 ================================ */
 
+.admin-topbar__toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-family: inherit;
+  padding: 0;
+  cursor: pointer;
+}
+
 .admin-shell {
   display: flex;
   min-height: 100vh;

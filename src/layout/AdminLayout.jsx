@@ -22,7 +22,7 @@ export default function AdminLayout() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const closeMenu = () => setMenuOpen(false);
-
+  console.log("AdminLayout v2 loaded");
   // Close the drawer on route change
   useEffect(() => {
     setMenuOpen(false);
@@ -50,23 +50,28 @@ export default function AdminLayout() {
     <div className="admin-shell">
       {/* Mobile top bar (hidden on desktop) */}
       <header className="admin-topbar">
-        <span className="admin-topbar__title">لوحة تحكم مصحة روح</span>
         <button
           type="button"
-          className={"admin-burger" + (menuOpen ? " admin-burger--open" : "")}
+          className="admin-topbar__toggle"
           onClick={() => setMenuOpen((o) => !o)}
-          aria-label={menuOpen ? "إغلاق القائمة" : "فتح القائمة"}
           aria-expanded={menuOpen}
           aria-controls="admin-sidebar"
         >
-          <span />
-          <span />
-          <span />
+          <span className="admin-topbar__title">لوحة تحكم مصحة روح</span>
+          <span
+            className={"admin-burger" + (menuOpen ? " admin-burger--open" : "")}
+          >
+            <span />
+            <span />
+            <span />
+          </span>
         </button>
       </header>
 
       <div
-        className={"admin-overlay" + (menuOpen ? " admin-overlay--visible" : "")}
+        className={
+          "admin-overlay" + (menuOpen ? " admin-overlay--visible" : "")
+        }
         onClick={closeMenu}
         aria-hidden="true"
       />
@@ -86,7 +91,8 @@ export default function AdminLayout() {
                 end={l.end}
                 onClick={closeMenu}
                 className={({ isActive }) =>
-                  "admin-sidebar__link" + (isActive ? " admin-sidebar__link--active" : "")
+                  "admin-sidebar__link" +
+                  (isActive ? " admin-sidebar__link--active" : "")
                 }
               >
                 {l.label}
