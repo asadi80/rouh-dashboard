@@ -29,8 +29,8 @@ const signIn = async (email, password) => {
   setUser(userData);
   
   // Log to debug
-  console.log("AuthContext signIn - user data:", userData);
-  console.log("AuthContext signIn - must_change_password:", userData?.must_change_password);
+  // console.log("AuthContext signIn - user data:", userData);
+  // console.log("AuthContext signIn - must_change_password:", userData?.must_change_password);
   
   return userData;
 };

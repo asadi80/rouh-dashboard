@@ -60,9 +60,9 @@ export default function SettingsManage() {
     setIsNew(false);
     
     try {
-      console.log("📡 Fetching settings from /api/settings");
+      // console.log("📡 Fetching settings from /api/settings");
       const response = await api.get("/api/settings");
-      console.log("✅ Settings data received:", response);
+      // console.log("✅ Settings data received:", response);
       
       const settingsData = Array.isArray(response) ? response[0] : response;
       
@@ -104,7 +104,7 @@ export default function SettingsManage() {
       // إزالة الحقول التي لا نريد إرسالها
       const { id, created_at, updated_at, ...payload } = form;
       
-      console.log(`📤 ${isNew ? 'Creating' : 'Updating'} settings:`, payload);
+      // console.log(`📤 ${isNew ? 'Creating' : 'Updating'} settings:`, payload);
       
       let response;
       if (isNew) {
@@ -113,7 +113,7 @@ export default function SettingsManage() {
         response = await api.put("/api/settings", payload);
       }
       
-      console.log("✅ Settings saved:", response);
+      // console.log("✅ Settings saved:", response);
       
       setSaved(true);
       setIsNew(false);

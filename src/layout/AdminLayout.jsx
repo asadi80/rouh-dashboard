@@ -24,7 +24,7 @@ export default function AdminLayout() {
   const closeMenu = () => setMenuOpen(false);
   // Close the drawer on route change
   useEffect(() => {
-      console.log("AdminLayout v2 loaded");
+      // console.log("AdminLayout v2 loaded");
 
     setMenuOpen(false);
   }, [location.pathname]);

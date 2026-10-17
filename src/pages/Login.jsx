@@ -22,28 +22,28 @@ export default function Login() {
  const handleSubmit = async (e) => {
   e.preventDefault();
 
-  console.log("LOGIN BUTTON CLICKED");
-  console.log("Email:", email);
+  // console.log("LOGIN BUTTON CLICKED");
+  // console.log("Email:", email);
 
   setError("");
   setSubmitting(true);
 
   try {
-    console.log("Calling signIn...");
+    // console.log("Calling signIn...");
 
     const loggedInUser = await signIn(email, password);
 
-    console.log("LOGIN SUCCESS:", loggedInUser);
-    console.log(
-      "must_change_password:",
-      loggedInUser?.must_change_password
-    );
+    // console.log("LOGIN SUCCESS:", loggedInUser);
+    // console.log(
+    //   "must_change_password:",
+    //   loggedInUser?.must_change_password
+    // );
 
     if (loggedInUser?.must_change_password === true) {
-      console.log("REDIRECTING TO CHANGE PASSWORD");
+      // console.log("REDIRECTING TO CHANGE PASSWORD");
       navigate("/change-password", { replace: true });
     } else {
-      console.log("REDIRECTING TO DASHBOARD");
+      // console.log("REDIRECTING TO DASHBOARD");
       navigate("/", { replace: true });
     }
   } catch (err) {
