@@ -7,9 +7,21 @@ const emptyForm = {
   title: "",
   specialty: "",
   initials: "",
+  gender: "",
   image_url: "",
   bio: "",
+  medical_school: "",
+  degree: "",
+  graduation_year: "",
+  postgraduate_qualifications: "",
+  residency_fellowship: "",
+  board_certifications: "",
+  subspecialty: "",
+  years_experience: "",
+  languages: "",
+  clinic_affiliation: "",
   is_active: true,
+  sort_order: 0,
 };
 
 const DAYS = [
@@ -110,8 +122,8 @@ function ScheduleForm({ schedule, setSchedule }) {
               ...day,
               [field]: value,
             }
-          : day
-      )
+          : day,
+      ),
     );
   };
 
@@ -136,12 +148,7 @@ function ScheduleForm({ schedule, setSchedule }) {
     });
   };
 
-  const updateExtraPeriod = (
-    dayIndex,
-    periodIndex,
-    field,
-    value
-  ) => {
+  const updateExtraPeriod = (dayIndex, periodIndex, field, value) => {
     setSchedule((current) =>
       current.map((day, index) => {
         if (index !== dayIndex) {
@@ -159,7 +166,7 @@ function ScheduleForm({ schedule, setSchedule }) {
           ...day,
           extraPeriods: periods,
         };
-      })
+      }),
     );
   };
 
@@ -178,7 +185,7 @@ function ScheduleForm({ schedule, setSchedule }) {
           ...day,
           extraPeriods: periods,
         };
-      })
+      }),
     );
   };
 
@@ -234,9 +241,7 @@ function ScheduleForm({ schedule, setSchedule }) {
               border: "1px solid rgba(0,0,0,0.10)",
               borderRadius: 12,
               padding: 14,
-              background: day.enabled
-                ? "rgba(0,0,0,0.015)"
-                : "transparent",
+              background: day.enabled ? "rgba(0,0,0,0.015)" : "transparent",
             }}
           >
             {/* Day header */}
@@ -262,11 +267,7 @@ function ScheduleForm({ schedule, setSchedule }) {
                   type="checkbox"
                   checked={day.enabled}
                   onChange={(e) =>
-                    updateDay(
-                      index,
-                      "enabled",
-                      e.target.checked
-                    )
+                    updateDay(index, "enabled", e.target.checked)
                   }
                 />
 
@@ -291,8 +292,7 @@ function ScheduleForm({ schedule, setSchedule }) {
                 <div
                   style={{
                     display: "grid",
-                    gridTemplateColumns:
-                      "repeat(auto-fit, minmax(180px, 1fr))",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
                     gap: 12,
                   }}
                 >
@@ -301,11 +301,7 @@ function ScheduleForm({ schedule, setSchedule }) {
                     <ArabicTimeInput
                       value={day.start_time}
                       onChange={(value) =>
-                        updateDay(
-                          index,
-                          "start_time",
-                          value
-                        )
+                        updateDay(index, "start_time", value)
                       }
                       required={day.enabled}
                     />
@@ -315,13 +311,7 @@ function ScheduleForm({ schedule, setSchedule }) {
                     إلى
                     <ArabicTimeInput
                       value={day.end_time}
-                      onChange={(value) =>
-                        updateDay(
-                          index,
-                          "end_time",
-                          value
-                        )
-                      }
+                      onChange={(value) => updateDay(index, "end_time", value)}
                       required={day.enabled}
                     />
                   </label>
@@ -332,86 +322,72 @@ function ScheduleForm({ schedule, setSchedule }) {
                       type="text"
                       placeholder="اختياري"
                       value={day.note}
-                      onChange={(e) =>
-                        updateDay(
-                          index,
-                          "note",
-                          e.target.value
-                        )
-                      }
+                      onChange={(e) => updateDay(index, "note", e.target.value)}
                     />
                   </label>
                 </div>
 
                 {/* Extra periods */}
-                {day.extraPeriods?.map(
-                  (period, periodIndex) => (
+                {day.extraPeriods?.map((period, periodIndex) => (
+                  <div
+                    key={periodIndex}
+                    style={{
+                      marginTop: 12,
+                      paddingTop: 12,
+                      borderTop: "1px dashed rgba(0,0,0,0.15)",
+                    }}
+                  >
                     <div
-                      key={periodIndex}
                       style={{
-                        marginTop: 12,
-                        paddingTop: 12,
-                        borderTop:
-                          "1px dashed rgba(0,0,0,0.15)",
+                        display: "grid",
+                        gridTemplateColumns:
+                          "repeat(auto-fit, minmax(180px, 1fr))",
+                        gap: 12,
+                        alignItems: "end",
                       }}
                     >
-                      <div
-                        style={{
-                          display: "grid",
-                          gridTemplateColumns:
-                            "repeat(auto-fit, minmax(180px, 1fr))",
-                          gap: 12,
-                          alignItems: "end",
-                        }}
-                      >
-                        <label>
-                          من
-                          <ArabicTimeInput
-                            value={period.start_time}
-                            onChange={(value) =>
-                              updateExtraPeriod(
-                                index,
-                                periodIndex,
-                                "start_time",
-                                value
-                              )
-                            }
-                            required
-                          />
-                        </label>
-
-                        <label>
-                          إلى
-                          <ArabicTimeInput
-                            value={period.end_time}
-                            onChange={(value) =>
-                              updateExtraPeriod(
-                                index,
-                                periodIndex,
-                                "end_time",
-                                value
-                              )
-                            }
-                            required
-                          />
-                        </label>
-
-                        <button
-                          type="button"
-                          className="btn btn-ghost"
-                          onClick={() =>
-                            removeExtraPeriod(
+                      <label>
+                        من
+                        <ArabicTimeInput
+                          value={period.start_time}
+                          onChange={(value) =>
+                            updateExtraPeriod(
                               index,
-                              periodIndex
+                              periodIndex,
+                              "start_time",
+                              value,
                             )
                           }
-                        >
-                          حذف الفترة
-                        </button>
-                      </div>
+                          required
+                        />
+                      </label>
+
+                      <label>
+                        إلى
+                        <ArabicTimeInput
+                          value={period.end_time}
+                          onChange={(value) =>
+                            updateExtraPeriod(
+                              index,
+                              periodIndex,
+                              "end_time",
+                              value,
+                            )
+                          }
+                          required
+                        />
+                      </label>
+
+                      <button
+                        type="button"
+                        className="btn btn-ghost"
+                        onClick={() => removeExtraPeriod(index, periodIndex)}
+                      >
+                        حذف الفترة
+                      </button>
                     </div>
-                  )
-                )}
+                  </div>
+                ))}
 
                 <div
                   style={{
@@ -421,9 +397,7 @@ function ScheduleForm({ schedule, setSchedule }) {
                   <button
                     type="button"
                     className="btn btn-ghost"
-                    onClick={() =>
-                      addAnotherPeriod(index)
-                    }
+                    onClick={() => addAnotherPeriod(index)}
                   >
                     + إضافة فترة أخرى
                   </button>
@@ -437,38 +411,119 @@ function ScheduleForm({ schedule, setSchedule }) {
   );
 }
 
+const handleImageUpload = async (event) => {
+  const file = event.target.files?.[0];
+  event.target.value = "";
+
+  if (!file) return;
+
+  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+    setError("يرجى اختيار صورة JPG أو PNG أو WebP.");
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    setError("يجب ألا يتجاوز حجم الصورة 5 ميجابايت.");
+    return;
+  }
+
+  setUploadingImage(true);
+  setError("");
+
+  try {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const token = getStoredToken();
+
+    const response = await fetch(`${API_BASE}/api/doctors/upload-image`, {
+      method: "POST",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: formData,
+    });
+
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(
+        result.message || result.error || "تعذر رفع صورة الطبيب.",
+      );
+    }
+
+    const imageUrl =
+      result.image_url ||
+      result.imageUrl ||
+      result.url ||
+      result.data?.image_url;
+
+    if (!imageUrl) {
+      throw new Error("لم يُرجع الخادم رابط الصورة.");
+    }
+
+    setForm((current) => ({
+      ...current,
+      image_url: imageUrl,
+    }));
+  } catch (err) {
+    setError(err.message || "حدث خطأ أثناء رفع الصورة.");
+  } finally {
+    setUploadingImage(false);
+  }
+};
+
 export default function DoctorsManage() {
   const [doctors, setDoctors] = useState([]);
 
   const [form, setForm] = useState(emptyForm);
 
-  const [schedule, setSchedule] = useState(
-    createEmptySchedule()
-  );
+  const [schedule, setSchedule] = useState(createEmptySchedule());
 
   const [loading, setLoading] = useState(true);
 
   const [error, setError] = useState("");
 
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  const API_BASE = (import.meta.env.VITE_API_URL || "")
+    .trim()
+    .replace(/\/+$/, "");
+
+  const getDoctorImageUrl = (url) => {
+    if (!url) return "";
+    if (/^https?:\/\//i.test(url)) return url;
+
+    const path = url.startsWith("/") ? url : `/${url}`;
+    return `${API_BASE}${path}`;
+  };
+
+  const getStoredToken = () => {
+    try {
+      const tokens = JSON.parse(localStorage.getItem("tokens") || "{}");
+      if (tokens.accessToken) return tokens.accessToken;
+    } catch {
+      // Try the legacy token keys below.
+    }
+
+    return (
+      localStorage.getItem("authToken") ||
+      localStorage.getItem("token") ||
+      sessionStorage.getItem("authToken") ||
+      sessionStorage.getItem("token") ||
+      ""
+    );
+  };
 
   const load = async () => {
     setLoading(true);
     setError("");
 
     try {
-      const data = await api.get(
-        "/api/doctors/admin"
-      );
+      const data = await api.get("/api/doctors/admin");
 
-      setDoctors(
-        Array.isArray(data) ? data : []
-      );
+      setDoctors(Array.isArray(data) ? data : []);
     } catch (err) {
-      setError(
-        err.message ||
-          "حدث خطأ أثناء تحميل الأطباء"
-      );
+      setError(err.message || "حدث خطأ أثناء تحميل الأطباء");
 
       setDoctors([]);
     } finally {
@@ -483,10 +538,7 @@ export default function DoctorsManage() {
   const handleChange = (field) => (e) => {
     setForm((current) => ({
       ...current,
-      [field]:
-        e.target.type === "checkbox"
-          ? e.target.checked
-          : e.target.value,
+      [field]: e.target.type === "checkbox" ? e.target.checked : e.target.value,
     }));
   };
 
@@ -495,9 +547,7 @@ export default function DoctorsManage() {
       ...emptyForm,
     });
 
-    setSchedule(
-      createEmptySchedule()
-    );
+    setSchedule(createEmptySchedule());
 
     setError("");
   };
@@ -508,21 +558,15 @@ export default function DoctorsManage() {
    */
   const loadDoctorSchedule = async (doctorId) => {
     try {
-      const rows = await api.get(
-        `/api/doctors/${doctorId}/schedule`
-      );
+      const rows = await api.get(`/api/doctors/${doctorId}/schedule`);
 
-      const newSchedule =
-        createEmptySchedule();
+      const newSchedule = createEmptySchedule();
 
       if (Array.isArray(rows)) {
         rows.forEach((row) => {
-          const index =
-            newSchedule.findIndex(
-              (day) =>
-                day.day_of_week ===
-                row.day_of_week
-            );
+          const index = newSchedule.findIndex(
+            (day) => day.day_of_week === row.day_of_week,
+          );
 
           /*
            * Normal schedule entry
@@ -532,13 +576,10 @@ export default function DoctorsManage() {
               newSchedule[index] = {
                 ...newSchedule[index],
                 enabled: true,
-                start_time:
-                  row.start_time || "",
-                end_time:
-                  row.end_time || "",
+                start_time: row.start_time || "",
+                end_time: row.end_time || "",
                 note: row.note || "",
-                sort_order:
-                  row.sort_order || 0,
+                sort_order: row.sort_order || 0,
               };
             } else {
               /*
@@ -546,14 +587,11 @@ export default function DoctorsManage() {
                * Add it as another period.
                */
               newSchedule[index].extraPeriods =
-                newSchedule[index]
-                  .extraPeriods || [];
+                newSchedule[index].extraPeriods || [];
 
               newSchedule[index].extraPeriods.push({
-                start_time:
-                  row.start_time || "",
-                end_time:
-                  row.end_time || "",
+                start_time: row.start_time || "",
+                end_time: row.end_time || "",
               });
             }
           }
@@ -562,15 +600,9 @@ export default function DoctorsManage() {
 
       setSchedule(newSchedule);
     } catch (err) {
-      console.error(
-        "Failed to load doctor schedule:",
-        err
-      );
+      console.error("Failed to load doctor schedule:", err);
 
-      setError(
-        err.message ||
-          "تعذر تحميل جدول الطبيب"
-      );
+      setError(err.message || "تعذر تحميل جدول الطبيب");
     }
   };
 
@@ -578,13 +610,20 @@ export default function DoctorsManage() {
     setForm({
       ...emptyForm,
       ...doctor,
+      gender: doctor.gender || "",
+      image_url: doctor.image_url || doctor.image || "",
+      languages: Array.isArray(doctor.languages)
+        ? doctor.languages.join(", ")
+        : doctor.languages || "",
+      graduation_year: doctor.graduation_year ?? "",
+      years_experience: doctor.years_experience ?? "",
+      sort_order: doctor.sort_order ?? 0,
+      is_active: doctor.is_active ?? true,
     });
 
     setError("");
 
-    await loadDoctorSchedule(
-      doctor.id
-    );
+    await loadDoctorSchedule(doctor.id);
 
     window.scrollTo({
       top: 0,
@@ -595,9 +634,7 @@ export default function DoctorsManage() {
   /*
    * Save schedule rows after doctor creation/update.
    */
-  const saveDoctorSchedule = async (
-    doctorId
-  ) => {
+  const saveDoctorSchedule = async (doctorId) => {
     /*
      * First get existing schedule.
      * This is important when editing.
@@ -605,18 +642,11 @@ export default function DoctorsManage() {
     let existingRows = [];
 
     try {
-      const existing = await api.get(
-        `/api/doctors/${doctorId}/schedule`
-      );
+      const existing = await api.get(`/api/doctors/${doctorId}/schedule`);
 
-      existingRows = Array.isArray(existing)
-        ? existing
-        : [];
+      existingRows = Array.isArray(existing) ? existing : [];
     } catch (err) {
-      console.warn(
-        "Could not load existing schedule:",
-        err
-      );
+      console.warn("Could not load existing schedule:", err);
     }
 
     /*
@@ -626,9 +656,7 @@ export default function DoctorsManage() {
      * removed days are actually removed.
      */
     for (const row of existingRows) {
-      await api.del(
-        `/api/doctors/${doctorId}/schedule/${row.id}`
-      );
+      await api.del(`/api/doctors/${doctorId}/schedule/${row.id}`);
     }
 
     /*
@@ -642,70 +670,42 @@ export default function DoctorsManage() {
       /*
        * Main period
        */
-      if (
-        day.start_time &&
-        day.end_time
-      ) {
-        await api.post(
-          `/api/doctors/${doctorId}/schedule`,
-          {
-            day_of_week:
-              day.day_of_week,
+      if (day.start_time && day.end_time) {
+        await api.post(`/api/doctors/${doctorId}/schedule`, {
+          day_of_week: day.day_of_week,
 
-            start_time:
-              day.start_time,
+          start_time: day.start_time,
 
-            end_time:
-              day.end_time,
+          end_time: day.end_time,
 
-            note:
-              day.note?.trim() || null,
+          note: day.note?.trim() || null,
 
-            sort_order:
-              Number(day.sort_order) || 0,
-          }
-        );
+          sort_order: Number(day.sort_order) || 0,
+        });
       }
 
       /*
        * Additional periods
        */
       if (day.extraPeriods) {
-        for (
-          let i = 0;
-          i < day.extraPeriods.length;
-          i++
-        ) {
-          const period =
-            day.extraPeriods[i];
+        for (let i = 0; i < day.extraPeriods.length; i++) {
+          const period = day.extraPeriods[i];
 
-          if (
-            !period.start_time ||
-            !period.end_time
-          ) {
+          if (!period.start_time || !period.end_time) {
             continue;
           }
 
-          await api.post(
-            `/api/doctors/${doctorId}/schedule`,
-            {
-              day_of_week:
-                day.day_of_week,
+          await api.post(`/api/doctors/${doctorId}/schedule`, {
+            day_of_week: day.day_of_week,
 
-              start_time:
-                period.start_time,
+            start_time: period.start_time,
 
-              end_time:
-                period.end_time,
+            end_time: period.end_time,
 
-              note: null,
+            note: null,
 
-              sort_order:
-                (Number(day.sort_order) || 0) +
-                i +
-                1,
-            }
-          );
+            sort_order: (Number(day.sort_order) || 0) + i + 1,
+          });
         }
       }
     }
@@ -726,43 +726,29 @@ export default function DoctorsManage() {
           continue;
         }
 
-        if (
-          !day.start_time ||
-          !day.end_time
-        ) {
+        if (!day.start_time || !day.end_time) {
           throw new Error(
-            `يرجى تحديد وقت البداية والنهاية ليوم ${day.day_of_week}`
+            `يرجى تحديد وقت البداية والنهاية ليوم ${day.day_of_week}`,
           );
         }
 
-        if (
-          day.start_time >=
-          day.end_time
-        ) {
+        if (day.start_time >= day.end_time) {
           throw new Error(
-            `وقت النهاية يجب أن يكون بعد وقت البداية في يوم ${day.day_of_week}`
+            `وقت النهاية يجب أن يكون بعد وقت البداية في يوم ${day.day_of_week}`,
           );
         }
 
         if (day.extraPeriods) {
-          for (
-            const period of day.extraPeriods
-          ) {
-            if (
-              !period.start_time ||
-              !period.end_time
-            ) {
+          for (const period of day.extraPeriods) {
+            if (!period.start_time || !period.end_time) {
               throw new Error(
-                `يرجى إكمال أوقات جميع الفترات في يوم ${day.day_of_week}`
+                `يرجى إكمال أوقات جميع الفترات في يوم ${day.day_of_week}`,
               );
             }
 
-            if (
-              period.start_time >=
-              period.end_time
-            ) {
+            if (period.start_time >= period.end_time) {
               throw new Error(
-                `وقت النهاية يجب أن يكون بعد وقت البداية في يوم ${day.day_of_week}`
+                `وقت النهاية يجب أن يكون بعد وقت البداية في يوم ${day.day_of_week}`,
               );
             }
           }
@@ -770,14 +756,38 @@ export default function DoctorsManage() {
       }
 
       const payload = {
-        name: form.name,
-        title: form.title,
-        specialty: form.specialty,
-        initials: form.initials,
-        image_url:
-          form.image_url || null,
-        bio: form.bio,
+        name: form.name.trim(),
+        title: form.title.trim(),
+        specialty: form.specialty.trim(),
+        initials: form.initials.trim(),
+        gender: form.gender || null,
+        image_url: form.image_url || null,
+        bio: form.bio || null,
+
+        medical_school: form.medical_school || null,
+        degree: form.degree || null,
+        graduation_year: form.graduation_year
+          ? Number(form.graduation_year)
+          : null,
+
+        postgraduate_qualifications: form.postgraduate_qualifications || null,
+        residency_fellowship: form.residency_fellowship || null,
+        board_certifications: form.board_certifications || null,
+        subspecialty: form.subspecialty || null,
+
+        years_experience:
+          form.years_experience !== "" ? Number(form.years_experience) : null,
+
+        languages: form.languages
+          ? form.languages
+              .split(",")
+              .map((language) => language.trim())
+              .filter(Boolean)
+          : [],
+
+        clinic_affiliation: form.clinic_affiliation || null,
         is_active: form.is_active,
+        sort_order: Number(form.sort_order) || 0,
       };
 
       let doctorId;
@@ -786,44 +796,32 @@ export default function DoctorsManage() {
        * Create doctor
        */
       if (!form.id) {
-        const created =
-          await api.post(
-            "/api/doctors",
-            payload
-          );
+        const created = await api.post("/api/doctors", payload);
 
         /*
          * Different APIs return the ID
          * in slightly different shapes.
          */
-        doctorId =
-          created?.id ||
-          created?.doctor?.id ||
-          created?.data?.id;
+        doctorId = created?.id || created?.doctor?.id || created?.data?.id;
       } else {
         /*
          * Update doctor
          */
-        await api.put(
-          `/api/doctors/${form.id}`,
-          payload
-        );
+        await api.put(`/api/doctors/${form.id}`, payload);
 
         doctorId = form.id;
       }
 
       if (!doctorId) {
         throw new Error(
-          "تم حفظ الطبيب ولكن لم يتم الحصول على رقم الطبيب لحفظ الجدول"
+          "تم حفظ الطبيب ولكن لم يتم الحصول على رقم الطبيب لحفظ الجدول",
         );
       }
 
       /*
        * Save schedule
        */
-      await saveDoctorSchedule(
-        doctorId
-      );
+      await saveDoctorSchedule(doctorId);
 
       /*
        * Reset form
@@ -835,30 +833,21 @@ export default function DoctorsManage() {
        */
       await load();
     } catch (err) {
-      setError(
-        err.message ||
-          "حدث خطأ أثناء حفظ الطبيب"
-      );
+      setError(err.message || "حدث خطأ أثناء حفظ الطبيب");
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (
-      !confirm(
-        "هل تريد حذف هذا الطبيب؟ لا يمكن التراجع عن هذا الإجراء."
-      )
-    ) {
+    if (!confirm("هل تريد حذف هذا الطبيب؟ لا يمكن التراجع عن هذا الإجراء.")) {
       return;
     }
 
     setError("");
 
     try {
-      await api.del(
-        `/api/doctors/${id}`
-      );
+      await api.del(`/api/doctors/${id}`);
 
       /*
        * Because doctor_schedule has:
@@ -875,10 +864,7 @@ export default function DoctorsManage() {
 
       await load();
     } catch (err) {
-      setError(
-        err.message ||
-          "حدث خطأ أثناء حذف الطبيب"
-      );
+      setError(err.message || "حدث خطأ أثناء حذف الطبيب");
     }
   };
 
@@ -889,11 +875,7 @@ export default function DoctorsManage() {
         <h1>إدارة الأطباء</h1>
       </div>
 
-      {error && (
-        <div className="admin-error">
-          {error}
-        </div>
-      )}
+      {error && <div className="admin-error">{error}</div>}
 
       {/* =========================
           DOCTOR FORM
@@ -910,23 +892,14 @@ export default function DoctorsManage() {
             fontSize: 16,
           }}
         >
-          {form.id
-            ? "تعديل بيانات طبيب"
-            : "إضافة طبيب جديد"}
+          {form.id ? "تعديل بيانات طبيب" : "إضافة طبيب جديد"}
         </h3>
 
-        <form
-          className="admin-form"
-          onSubmit={handleSubmit}
-        >
+        <form className="admin-form" onSubmit={handleSubmit}>
           {/* Name */}
           <label>
             الاسم الكامل
-            <input
-              value={form.name}
-              onChange={handleChange("name")}
-              required
-            />
+            <input value={form.name} onChange={handleChange("name")} required />
           </label>
 
           {/* Title */}
@@ -944,9 +917,7 @@ export default function DoctorsManage() {
             التخصص
             <input
               value={form.specialty}
-              onChange={handleChange(
-                "specialty"
-              )}
+              onChange={handleChange("specialty")}
               required
             />
           </label>
@@ -956,32 +927,156 @@ export default function DoctorsManage() {
             الأحرف الأولى
             <input
               value={form.initials}
-              onChange={handleChange(
-                "initials"
-              )}
+              onChange={handleChange("initials")}
               placeholder="مثال: م ش"
               required
             />
           </label>
 
           {/* Image */}
-          <label>
-            رابط الصورة
+          <label className="admin-form--full">
+            صورة الطبيب
             <input
-              value={form.image_url}
-              onChange={handleChange(
-                "image_url"
-              )}
-              placeholder="https://..."
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={handleImageUpload}
+              disabled={uploadingImage || saving}
             />
+            <small>JPG أو PNG أو WebP — الحد الأقصى 5 ميجابايت.</small>
+            {uploadingImage && <p>جارٍ رفع الصورة...</p>}
+            {form.image_url && (
+              <div style={{ marginTop: 12 }}>
+                <img
+                  src={getDoctorImageUrl(form.image_url)}
+                  alt="معاينة صورة الطبيب"
+                  style={{
+                    width: 120,
+                    height: 120,
+                    objectFit: "cover",
+                    borderRadius: 12,
+                    border: "1px solid #ddd",
+                  }}
+                  onError={(event) => {
+                    event.currentTarget.style.display = "none";
+                  }}
+                />
+
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  onClick={() =>
+                    setForm((current) => ({
+                      ...current,
+                      image_url: "",
+                    }))
+                  }
+                >
+                  إزالة الصورة
+                </button>
+              </div>
+            )}
           </label>
 
           {/* Bio */}
           <label className="admin-form--full">
             نبذة تعريفية
+            <textarea value={form.bio} onChange={handleChange("bio")} />
+          </label>
+
+          <label>
+            الجنس
+            <select value={form.gender} onChange={handleChange("gender")}>
+              <option value="">اختر الجنس</option>
+              <option value="male">ذكر</option>
+              <option value="female">أنثى</option>
+            </select>
+          </label>
+
+          <label>
+            كلية الطب
+            <input
+              value={form.medical_school}
+              onChange={handleChange("medical_school")}
+            />
+          </label>
+
+          <label>
+            الدرجة العلمية
+            <input
+              value={form.degree}
+              onChange={handleChange("degree")}
+              placeholder="مثال: MBBS, MD"
+            />
+          </label>
+
+          <label>
+            سنة التخرج
+            <input
+              type="number"
+              min="1900"
+              max={new Date().getFullYear()}
+              value={form.graduation_year}
+              onChange={handleChange("graduation_year")}
+            />
+          </label>
+
+          <label>
+            سنوات الخبرة
+            <input
+              type="number"
+              min="0"
+              value={form.years_experience}
+              onChange={handleChange("years_experience")}
+            />
+          </label>
+
+          <label>
+            التخصص الدقيق
+            <input
+              value={form.subspecialty}
+              onChange={handleChange("subspecialty")}
+            />
+          </label>
+
+          <label className="admin-form--full">
+            مؤهلات الدراسات العليا
             <textarea
-              value={form.bio}
-              onChange={handleChange("bio")}
+              value={form.postgraduate_qualifications}
+              onChange={handleChange("postgraduate_qualifications")}
+            />
+          </label>
+
+          <label className="admin-form--full">
+            الإقامة والزمالة
+            <textarea
+              value={form.residency_fellowship}
+              onChange={handleChange("residency_fellowship")}
+            />
+          </label>
+
+          <label className="admin-form--full">
+            الشهادات المهنية والتخصصية
+            <textarea
+              value={form.board_certifications}
+              onChange={handleChange("board_certifications")}
+            />
+          </label>
+
+          <label>
+            اللغات
+            <input
+              value={form.languages}
+              onChange={handleChange("languages")}
+              placeholder="العربية، الإنجليزية"
+            />
+            <small>افصل بين اللغات بفاصلة.</small>
+          </label>
+
+          <label>
+            المستشفى أو العيادة
+            <input
+              value={form.clinic_affiliation}
+              onChange={handleChange("clinic_affiliation")}
             />
           </label>
 
@@ -989,27 +1084,17 @@ export default function DoctorsManage() {
           <label>
             الحالة
             <select
-              value={
-                form.is_active
-                  ? "1"
-                  : "0"
-              }
+              value={form.is_active ? "1" : "0"}
               onChange={(e) =>
                 setForm((current) => ({
                   ...current,
-                  is_active:
-                    e.target.value ===
-                    "1",
+                  is_active: e.target.value === "1",
                 }))
               }
             >
-              <option value="1">
-                ظاهر في الموقع
-              </option>
+              <option value="1">ظاهر في الموقع</option>
 
-              <option value="0">
-                مخفي
-              </option>
+              <option value="0">مخفي</option>
             </select>
           </label>
 
@@ -1017,10 +1102,7 @@ export default function DoctorsManage() {
               SCHEDULE
           ========================== */}
           <div className="admin-form--full">
-            <ScheduleForm
-              schedule={schedule}
-              setSchedule={setSchedule}
-            />
+            <ScheduleForm schedule={schedule} setSchedule={setSchedule} />
           </div>
 
           {/* Actions */}
@@ -1039,13 +1121,15 @@ export default function DoctorsManage() {
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={saving}
+              disabled={saving || uploadingImage}
             >
-              {saving
-                ? "جارٍ الحفظ..."
-                : form.id
-                ? "حفظ التعديلات"
-                : "إضافة الطبيب"}
+              {uploadingImage
+                ? "جارٍ رفع الصورة..."
+                : saving
+                  ? "جارٍ الحفظ..."
+                  : form.id
+                    ? "حفظ التعديلات"
+                    : "إضافة الطبيب"}
             </button>
           </div>
         </form>
@@ -1069,32 +1153,20 @@ export default function DoctorsManage() {
           <tbody>
             {loading ? (
               <tr className="admin-empty-row">
-                <td colSpan={5}>
-                  جارٍ التحميل...
-                </td>
+                <td colSpan={5}>جارٍ التحميل...</td>
               </tr>
             ) : doctors.length === 0 ? (
               <tr className="admin-empty-row">
-                <td colSpan={5}>
-                  لا يوجد أطباء بعد
-                </td>
+                <td colSpan={5}>لا يوجد أطباء بعد</td>
               </tr>
             ) : (
               doctors.map((doctor) => (
-                <tr
-                  key={doctor.id}
-                >
-                  <td>
-                    {doctor.name}
-                  </td>
+                <tr key={doctor.id}>
+                  <td>{doctor.name}</td>
 
-                  <td>
-                    {doctor.title}
-                  </td>
+                  <td>{doctor.title}</td>
 
-                  <td>
-                    {doctor.specialty}
-                  </td>
+                  <td>{doctor.specialty}</td>
 
                   <td>
                     <span
@@ -1104,40 +1176,28 @@ export default function DoctorsManage() {
                           : "admin-badge--inactive"
                       }`}
                     >
-                      {doctor.is_active
-                        ? "ظاهر"
-                        : "مخفي"}
+                      {doctor.is_active ? "ظاهر" : "مخفي"}
                     </span>
                   </td>
 
                   <td>
                     <div
                       style={{
-                        display:
-                          "flex",
+                        display: "flex",
                         gap: 8,
-                        flexWrap:
-                          "wrap",
+                        flexWrap: "wrap",
                       }}
                     >
                       <button
                         className="btn btn-ghost"
-                        onClick={() =>
-                          handleEdit(
-                            doctor
-                          )
-                        }
+                        onClick={() => handleEdit(doctor)}
                       >
                         تعديل
                       </button>
 
                       <button
                         className="btn btn-ghost"
-                        onClick={() =>
-                          handleDelete(
-                            doctor.id
-                          )
-                        }
+                        onClick={() => handleDelete(doctor.id)}
                       >
                         حذف
                       </button>
