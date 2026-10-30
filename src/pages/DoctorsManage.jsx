@@ -411,7 +411,36 @@ function ScheduleForm({ schedule, setSchedule }) {
   );
 }
 
-const handleImageUpload = async (event) => {
+
+
+
+export default function DoctorsManage() {
+  const [doctors, setDoctors] = useState([]);
+
+  const [form, setForm] = useState(emptyForm);
+
+  const [schedule, setSchedule] = useState(createEmptySchedule());
+
+  const [loading, setLoading] = useState(true);
+
+  const [error, setError] = useState("");
+
+  const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  const API_BASE = (import.meta.env.VITE_API_URL || "")
+    .trim()
+    .replace(/\/+$/, "");
+
+  const getDoctorImageUrl = (url) => {
+    if (!url) return "";
+    if (/^https?:\/\//i.test(url)) return url;
+
+    const path = url.startsWith("/") ? url : `/${url}`;
+    return `${API_BASE}${path}`;
+  };
+
+  const handleImageUpload = async (event) => {
   const file = event.target.files?.[0];
   event.target.value = "";
 
@@ -470,32 +499,6 @@ const handleImageUpload = async (event) => {
     setUploadingImage(false);
   }
 };
-
-export default function DoctorsManage() {
-  const [doctors, setDoctors] = useState([]);
-
-  const [form, setForm] = useState(emptyForm);
-
-  const [schedule, setSchedule] = useState(createEmptySchedule());
-
-  const [loading, setLoading] = useState(true);
-
-  const [error, setError] = useState("");
-
-  const [saving, setSaving] = useState(false);
-  const [uploadingImage, setUploadingImage] = useState(false);
-
-  const API_BASE = (import.meta.env.VITE_API_URL || "")
-    .trim()
-    .replace(/\/+$/, "");
-
-  const getDoctorImageUrl = (url) => {
-    if (!url) return "";
-    if (/^https?:\/\//i.test(url)) return url;
-
-    const path = url.startsWith("/") ? url : `/${url}`;
-    return `${API_BASE}${path}`;
-  };
 
   const getStoredToken = () => {
     try {
