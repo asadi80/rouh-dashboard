@@ -463,19 +463,30 @@ export default function DoctorsManage() {
     const formData = new FormData();
     formData.append("image", file);
 
-    const token = getStoredToken();
+    const token = getToken();
 
-    const response = await fetch(`${API_BASE}/api/doctors/upload-image`, {
-      method: "POST",
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-      body: formData,
-    });
+    if (!token) {
+      throw new Error("انتهت جلسة تسجيل الدخول. يرجى تسجيل الدخول مرة أخرى.");
+    }
+
+    const response = await fetch(
+      `${API_BASE}/api/doctors/upload-image`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      },
+    );
 
     const result = await response.json().catch(() => ({}));
 
     if (!response.ok) {
       throw new Error(
-        result.message || result.error || "تعذر رفع صورة الطبيب.",
+        result.message ||
+          result.error ||
+          "تعذر رفع صورة الطبيب.",
       );
     }
 

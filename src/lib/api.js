@@ -1,3 +1,4 @@
+//src/lib/api.js
 const API_URL = import.meta.env.VITE_API_URL;
 
 if (!API_URL) {
@@ -18,14 +19,20 @@ export function setToken(token) {
 async function request(path, { method = "GET", body, headers = {} } = {}) {
   const token = getToken();
 
+  const isFormData = body instanceof FormData;
+
   const res = await fetch(`${API_URL}${path}`, {
     method,
     headers: {
-      "Content-Type": "application/json",
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...headers,
     },
-    body: body ? JSON.stringify(body) : undefined,
+    body: body
+      ? isFormData
+        ? body
+        : JSON.stringify(body)
+      : undefined,
   });
 
   if (res.status === 204) return null;
@@ -33,7 +40,7 @@ async function request(path, { method = "GET", body, headers = {} } = {}) {
   const data = await res.json().catch(() => null);
 
   if (!res.ok) {
-    const message = data?.error || "حدث خطأ غير متوقع.";
+    const message = data?.message || data?.error || "حدث خطأ غير متوقع.";
     const error = new Error(message);
     error.status = res.status;
     throw error;
