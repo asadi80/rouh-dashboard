@@ -12,6 +12,7 @@ const links = [
   { to: "/hours", label: "أوقات العمل" },
   { to: "/announcements", label: "الإعلانات" },
   { to: "/job-titles", label: "المسميات الوظيفية" },
+  { to: "/specialties", label: "إدارة التخصصات" },
   { to: "/staff", label: "الموظفون", superOnly: true },
 ];
 

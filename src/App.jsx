@@ -15,6 +15,7 @@ import AnnouncementsManage from "./pages/AnnouncementsManage";
 import JobTitlesManage from "./pages/JobTitlesManage";
 import StaffManage from "./pages/StaffManage";
 import SettingsManage from "./pages/SettingsManage";
+import SpecialtiesManage from "./pages/SpecialtiesManage";
 
 export default function App() {
   return (
@@ -50,6 +51,7 @@ export default function App() {
             <Route path="announcements" element={<AnnouncementsManage />} />
             <Route path="job-titles" element={<JobTitlesManage />} />
             <Route path="settings" element={<SettingsManage />} />
+            <Route path="specialties" element={<SpecialtiesManage />} />
 
             <Route
               path="staff"
