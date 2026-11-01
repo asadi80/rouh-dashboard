@@ -511,20 +511,27 @@ export default function DoctorsManage() {
     }
   };
 
-  const loadSpecialties = async () => {
-    setLoadingSpecialties(true);
+const loadSpecialties = async () => {
+  setLoadingSpecialties(true);
 
-    try {
-      const data = await api.get("/api/specialties/admin");
+  try {
+    const data = await api.get("/api/specialties");
 
-      setSpecialties(Array.isArray(data) ? data : []);
-    } catch (err) {
-      setError(err.message || "تعذر تحميل التخصصات");
-      setSpecialties([]);
-    } finally {
-      setLoadingSpecialties(false);
-    }
-  };
+    // Only display active specialties when adding/editing doctors
+    const activeSpecialties = Array.isArray(data)
+      ? data.filter((specialty) => specialty.is_active)
+      : [];
+
+    setSpecialties(activeSpecialties);
+  } catch (err) {
+    console.error("Load specialties error:", err);
+
+    setError(err.message || "تعذر تحميل التخصصات");
+    setSpecialties([]);
+  } finally {
+    setLoadingSpecialties(false);
+  }
+};
 
   const getStoredToken = () => {
     try {
