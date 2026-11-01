@@ -5,21 +5,27 @@ const emptyForm = {
   id: null,
   name: "",
   title: "",
-  specialty: "",
   initials: "",
+
+  role: "doctor",
+  specialty_ids: [],
+
   gender: "",
   image_url: "",
   bio: "",
+
   medical_school: "",
   degree: "",
   graduation_year: "",
   postgraduate_qualifications: "",
   residency_fellowship: "",
   board_certifications: "",
+
   subspecialty: "",
   years_experience: "",
   languages: "",
   clinic_affiliation: "",
+
   is_active: true,
   sort_order: 0,
 };
@@ -411,9 +417,6 @@ function ScheduleForm({ schedule, setSchedule }) {
   );
 }
 
-
-
-
 export default function DoctorsManage() {
   const [doctors, setDoctors] = useState([]);
 
@@ -427,6 +430,8 @@ export default function DoctorsManage() {
 
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [specialties, setSpecialties] = useState([]);
+  const [loadingSpecialties, setLoadingSpecialties] = useState(false);
 
   const API_BASE = (import.meta.env.VITE_API_URL || "")
     .trim()
@@ -441,75 +446,85 @@ export default function DoctorsManage() {
   };
 
   const handleImageUpload = async (event) => {
-  const file = event.target.files?.[0];
-  event.target.value = "";
+    const file = event.target.files?.[0];
+    event.target.value = "";
 
-  if (!file) return;
+    if (!file) return;
 
-  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-    setError("يرجى اختيار صورة JPG أو PNG أو WebP.");
-    return;
-  }
-
-  if (file.size > 5 * 1024 * 1024) {
-    setError("يجب ألا يتجاوز حجم الصورة 5 ميجابايت.");
-    return;
-  }
-
-  setUploadingImage(true);
-  setError("");
-
-  try {
-    const formData = new FormData();
-    formData.append("image", file);
-
-    const token = getToken();
-
-    if (!token) {
-      throw new Error("انتهت جلسة تسجيل الدخول. يرجى تسجيل الدخول مرة أخرى.");
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      setError("يرجى اختيار صورة JPG أو PNG أو WebP.");
+      return;
     }
 
-    const response = await fetch(
-      `${API_BASE}/api/doctors/upload-image`,
-      {
+    if (file.size > 5 * 1024 * 1024) {
+      setError("يجب ألا يتجاوز حجم الصورة 5 ميجابايت.");
+      return;
+    }
+
+    setUploadingImage(true);
+    setError("");
+
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const token = getToken();
+
+      if (!token) {
+        throw new Error("انتهت جلسة تسجيل الدخول. يرجى تسجيل الدخول مرة أخرى.");
+      }
+
+      const response = await fetch(`${API_BASE}/api/doctors/upload-image`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
         },
         body: formData,
-      },
-    );
+      });
 
-    const result = await response.json().catch(() => ({}));
+      const result = await response.json().catch(() => ({}));
 
-    if (!response.ok) {
-      throw new Error(
-        result.message ||
-          result.error ||
-          "تعذر رفع صورة الطبيب.",
-      );
+      if (!response.ok) {
+        throw new Error(
+          result.message || result.error || "تعذر رفع صورة الطبيب.",
+        );
+      }
+
+      const imageUrl =
+        result.image_url ||
+        result.imageUrl ||
+        result.url ||
+        result.data?.image_url;
+
+      if (!imageUrl) {
+        throw new Error("لم يُرجع الخادم رابط الصورة.");
+      }
+
+      setForm((current) => ({
+        ...current,
+        image_url: imageUrl,
+      }));
+    } catch (err) {
+      setError(err.message || "حدث خطأ أثناء رفع الصورة.");
+    } finally {
+      setUploadingImage(false);
     }
+  };
 
-    const imageUrl =
-      result.image_url ||
-      result.imageUrl ||
-      result.url ||
-      result.data?.image_url;
+  const loadSpecialties = async () => {
+    setLoadingSpecialties(true);
 
-    if (!imageUrl) {
-      throw new Error("لم يُرجع الخادم رابط الصورة.");
+    try {
+      const data = await api.get("/api/specialties/admin");
+
+      setSpecialties(Array.isArray(data) ? data : []);
+    } catch (err) {
+      setError(err.message || "تعذر تحميل التخصصات");
+      setSpecialties([]);
+    } finally {
+      setLoadingSpecialties(false);
     }
-
-    setForm((current) => ({
-      ...current,
-      image_url: imageUrl,
-    }));
-  } catch (err) {
-    setError(err.message || "حدث خطأ أثناء رفع الصورة.");
-  } finally {
-    setUploadingImage(false);
-  }
-};
+  };
 
   const getStoredToken = () => {
     try {
@@ -545,8 +560,22 @@ export default function DoctorsManage() {
     }
   };
 
+  const toggleSpecialty = (specialtyId) => {
+    setForm((current) => {
+      const exists = current.specialty_ids.includes(specialtyId);
+
+      return {
+        ...current,
+        specialty_ids: exists
+          ? current.specialty_ids.filter((id) => id !== specialtyId)
+          : [...current.specialty_ids, specialtyId],
+      };
+    });
+  };
+
   useEffect(() => {
     load();
+    loadSpecialties();
   }, []);
 
   const handleChange = (field) => (e) => {
@@ -621,17 +650,38 @@ export default function DoctorsManage() {
   };
 
   const handleEdit = async (doctor) => {
+    const selectedSpecialtyIds = (
+      doctor.specialties ||
+      doctor.specialty_ids ||
+      []
+    )
+      .map((item) =>
+        typeof item === "object" ? Number(item.id) : Number(item),
+      )
+      .filter(Number.isFinite);
+
     setForm({
       ...emptyForm,
       ...doctor,
+
+      role: doctor.role || "doctor",
+
+      specialty_ids: selectedSpecialtyIds,
+
       gender: doctor.gender || "",
+
       image_url: doctor.image_url || doctor.image || "",
+
       languages: Array.isArray(doctor.languages)
         ? doctor.languages.join(", ")
         : doctor.languages || "",
+
       graduation_year: doctor.graduation_year ?? "",
+
       years_experience: doctor.years_experience ?? "",
+
       sort_order: doctor.sort_order ?? 0,
+
       is_active: doctor.is_active ?? true,
     });
 
@@ -772,21 +822,32 @@ export default function DoctorsManage() {
       const payload = {
         name: form.name.trim(),
         title: form.title.trim(),
-        specialty: form.specialty.trim(),
         initials: form.initials.trim(),
+
+        role: form.role,
+
+        specialty_ids: form.specialty_ids,
+
         gender: form.gender || null,
+
         image_url: form.image_url || null,
+
         bio: form.bio || null,
 
         medical_school: form.medical_school || null,
+
         degree: form.degree || null,
+
         graduation_year: form.graduation_year
           ? Number(form.graduation_year)
           : null,
 
         postgraduate_qualifications: form.postgraduate_qualifications || null,
+
         residency_fellowship: form.residency_fellowship || null,
+
         board_certifications: form.board_certifications || null,
+
         subspecialty: form.subspecialty || null,
 
         years_experience:
@@ -800,7 +861,9 @@ export default function DoctorsManage() {
           : [],
 
         clinic_affiliation: form.clinic_affiliation || null,
+
         is_active: form.is_active,
+
         sort_order: Number(form.sort_order) || 0,
       };
 
@@ -882,6 +945,10 @@ export default function DoctorsManage() {
     }
   };
 
+  if (form.specialty_ids.length === 0) {
+    throw new Error("يرجى اختيار تخصص واحد على الأقل");
+  }
+
   return (
     <div>
       {/* Page header */}
@@ -927,14 +994,105 @@ export default function DoctorsManage() {
           </label>
 
           {/* Specialty */}
-          <label className="admin-form--full">
-            التخصص
-            <input
-              value={form.specialty}
-              onChange={handleChange("specialty")}
-              required
-            />
+          {/* Role */}
+          <label>
+            التصنيف المهني
+            <select value={form.role} onChange={handleChange("role")} required>
+              <option value="doctor">طبيب</option>
+              <option value="specialist">أخصائي</option>
+            </select>
           </label>
+
+          {/* Multiple Specialties */}
+          <div className="admin-form--full">
+            <label>التخصصات</label>
+
+            {loadingSpecialties ? (
+              <p>جارٍ تحميل التخصصات...</p>
+            ) : specialties.length === 0 ? (
+              <p>لا توجد تخصصات متاحة. يرجى إضافتها من إدارة التخصصات.</p>
+            ) : (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                  gap: 10,
+                  marginTop: 10,
+                  padding: 14,
+                  border: "1px solid var(--line)",
+                  borderRadius: 12,
+                }}
+              >
+                {specialties.map((specialty) => (
+                  <label
+                    key={specialty.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 9,
+                      cursor: "pointer",
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={form.specialty_ids.includes(
+                        Number(specialty.id),
+                      )}
+                      onChange={() => toggleSpecialty(Number(specialty.id))}
+                    />
+
+                    <span>{specialty.name}</span>
+                  </label>
+                ))}
+              </div>
+            )}
+
+            {/* Selected specialties */}
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 8,
+                marginTop: 12,
+              }}
+            >
+              {form.specialty_ids.map((id) => {
+                const specialty = specialties.find(
+                  (item) => Number(item.id) === id,
+                );
+
+                if (!specialty) return null;
+
+                return (
+                  <span
+                    key={id}
+                    style={{
+                      padding: "6px 12px",
+                      borderRadius: 20,
+                      background: "var(--sage-100)",
+                      color: "var(--teal-700)",
+                      fontSize: 13,
+                    }}
+                  >
+                    {specialty.name}
+                    <button
+                      type="button"
+                      onClick={() => toggleSpecialty(id)}
+                      style={{
+                        border: 0,
+                        background: "transparent",
+                        color: "inherit",
+                        marginInlineStart: 8,
+                        cursor: "pointer",
+                      }}
+                    >
+                      ×
+                    </button>
+                  </span>
+                );
+              })}
+            </div>
+          </div>
 
           {/* Initials */}
           <label>
@@ -1158,7 +1316,8 @@ export default function DoctorsManage() {
             <tr>
               <th>الاسم</th>
               <th>المسمى</th>
-              <th>التخصص</th>
+              <th>التصنيف</th>
+              <th>التخصصات</th>
               <th>الحالة</th>
               <th></th>
             </tr>
@@ -1180,7 +1339,32 @@ export default function DoctorsManage() {
 
                   <td>{doctor.title}</td>
 
-                  <td>{doctor.specialty}</td>
+                  <td>{doctor.role === "specialist" ? "أخصائي" : "طبيب"}</td>
+
+                  <td>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: 5,
+                      }}
+                    >
+                      {(doctor.specialties || []).map((specialty) => (
+                        <span
+                          key={specialty.id || specialty.name}
+                          style={{
+                            padding: "4px 9px",
+                            borderRadius: 20,
+                            background: "var(--sage-100)",
+                            color: "var(--teal-700)",
+                            fontSize: 12,
+                          }}
+                        >
+                          {specialty.name || specialty}
+                        </span>
+                      ))}
+                    </div>
+                  </td>
 
                   <td>
                     <span
@@ -1195,13 +1379,7 @@ export default function DoctorsManage() {
                   </td>
 
                   <td>
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: 8,
-                        flexWrap: "wrap",
-                      }}
-                    >
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                       <button
                         className="btn btn-ghost"
                         onClick={() => handleEdit(doctor)}
