@@ -777,7 +777,10 @@ export default function DoctorsManage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    if (!form.specialty_ids || form.specialty_ids.length === 0) {
+      setError("يرجى اختيار تخصص واحد على الأقل");
+      return;
+    }
     setSaving(true);
     setError("");
 
@@ -944,10 +947,6 @@ export default function DoctorsManage() {
       setError(err.message || "حدث خطأ أثناء حذف الطبيب");
     }
   };
-
-  if (form.specialty_ids.length === 0) {
-    throw new Error("يرجى اختيار تخصص واحد على الأقل");
-  }
 
   return (
     <div>
